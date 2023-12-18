@@ -9,10 +9,24 @@ public class Chessboard : MonoBehaviour
     private const int TILE_COUNT_X = 8;
     private const int TILE_COUNT_Y = 8;
     private GameObject[,] tiles;
+    private Camera currentCamera;
 
     private void Awake()
     {
         GenerateAllTiles(1, TILE_COUNT_X, TILE_COUNT_Y);
+    }
+    private void Update() {
+        if(!currentCamera)
+        {
+            currentCamera = Camera.current;
+            return;
+        }
+        RaycastHit info;
+        Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
+        if(Physics.Raycast(ray, out info , 100, LayerMask.GetMask("Tile")))
+        {
+
+        }
     }
 
     private void GenerateAllTiles(float tileSize, int tileCountX, int tileCountY)
@@ -22,7 +36,6 @@ public class Chessboard : MonoBehaviour
             for (int y = 0; y < tileCountY; y++)
                 tiles[x, y] = GenerateSingleTile(tileSize, x, y);
     }
-
     private GameObject GenerateSingleTile(float tileSize, int x, int y)
     {
         GameObject tileObject = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
@@ -43,6 +56,9 @@ public class Chessboard : MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = tris;
 
+        mesh.RecalculateNormals();
+
+        tileObject.layer = LayerMask.NameToLayer("Tile");
         tileObject.AddComponent<BoxCollider>();
 
         return tileObject;
