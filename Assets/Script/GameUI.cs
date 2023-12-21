@@ -5,8 +5,8 @@ using UnityEngine;
 public enum CameraAngle
 {
     menu = 0,
-    whiteTeam=1,
-    blackTeam=2,
+    whiteTeam = 1,
+    blackTeam = 2,
 }
 
 public class GameUI : MonoBehaviour
@@ -28,15 +28,15 @@ public class GameUI : MonoBehaviour
         Instance = this;
         RegisterEvents();
     }
-//cameras
-public void ChangeCamera(CameraAngle index)
-{
+    //cameras
+    public void ChangeCamera(CameraAngle index)
+    {
         for (int i = 0; i < cameraAngles.Length; i++)
             cameraAngles[i].SetActive(false);
         cameraAngles[(int)index].SetActive(true);
-}
+    }
 
-//button
+    //button
     public void OnLocalGameButton()
     {
         menuAnimator.SetTrigger("InGameMenu");
@@ -75,6 +75,10 @@ public void ChangeCamera(CameraAngle index)
         menuAnimator.SetTrigger("OnlineMenu");
     }
 
+    public void OnLeaveFromGameMenu()
+    {
+
+    }
     #region 
     private void RegisterEvents()
     {
