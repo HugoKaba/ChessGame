@@ -3365,6 +3365,8 @@ GameObject:
   - component: {fileID: 1596794076}
   - component: {fileID: 1596794080}
   - component: {fileID: 1596794081}
+  - component: {fileID: 1596794083}
+  - component: {fileID: 1596794082}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3470,7 +3472,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac6e69f71f7764bdc9425531ec1790a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  server: {fileID: 1596794083}
+  client: {fileID: 1596794082}
   menuAnimator: {fileID: 1596794081}
+  addressInput: {fileID: 1050151925}
 --- !u!95 &1596794081
 Animator:
   serializedVersion: 5
@@ -3492,6 +3497,30 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1596794082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596794075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a74f2a06ab0d4ad0be97df8b74caa86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1596794083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596794075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed52b082b02724a1cabc5cebfcdbfce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1683822325
 GameObject:
   m_ObjectHideFlags: 0
