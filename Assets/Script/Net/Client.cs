@@ -81,7 +81,7 @@ public class Client : MonoBehaviour
         {
             if (cmd == NetworkEvent.Type.Connect)
             {
-                // SendToSever(new NetWelcom());
+                SendToSever(new NetWelcome());
                 Debug.Log("we're conneted!");
             }
             else if (cmd == NetworkEvent.Type.Data)
