@@ -77,7 +77,8 @@ public class GameUI : MonoBehaviour
 
     public void OnLeaveFromGameMenu()
     {
-
+        ChangeCamera(CameraAngle.menu);
+        menuAnimator.SetTrigger("StartMenu");
     }
     #region 
     private void RegisterEvents()

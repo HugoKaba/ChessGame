@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum SpecialMove
 {
@@ -22,6 +23,7 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private float dragOffset = 1.5f;
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private Transform rematchIndicator;
+    [SerializeField] private Button rematchButton;
 
 
     [Header("Prefabs & Materials")]
@@ -47,6 +49,7 @@ public class Chessboard : MonoBehaviour
     private int playerCount = -1;
     private int currentTeam = -1;
     private bool localGame = true;
+    private bool[] playerRematch = new bool[2];
 
     private void Awake()
     {
@@ -113,6 +116,12 @@ public class Chessboard : MonoBehaviour
                     mm.destinationY = hitPosition.y;
                     mm.teamId = currentTeam;
                     Client.Instance.SendToSever(mm);
+
+                    if(localGame)
+                    {
+                                GameUI.Instance.ChangeCamera((currentTeam == 0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
+
+                    }
                 }
                 else
                 {
@@ -289,6 +298,8 @@ public class Chessboard : MonoBehaviour
     }
     public void GameReset()
     {
+        rematchButton.interactable = true;
+
         rematchIndicator.transform.GetChild(0).gameObject.SetActive(false);
         rematchIndicator.transform.GetChild(1).gameObject.SetActive(false);
 
@@ -299,6 +310,7 @@ public class Chessboard : MonoBehaviour
         currentlyDragging = null;
         availableMoves.Clear();
         moveList.Clear();
+        playerRematch[0] = playerRematch[1] = false;
 
         for (int x = 0; x < TILE_COUNT_X; x++)
         {
@@ -330,6 +342,8 @@ public class Chessboard : MonoBehaviour
 
         GameReset();
         GameUI.Instance.OnLeaveFromGameMenu();
+
+        Invoke("ShutdownRelay", 1.0f);
 
         playerCount = -1;
         currentTeam = -1;
@@ -620,10 +634,12 @@ public class Chessboard : MonoBehaviour
     {
         NetUtility.S_WELCOME += OnWelcomeServer;
         NetUtility.S_MAKE_MOVE += OnMakeMoveServer;
+        NetUtility.S_REMATCH += OnRematchServer;
 
         NetUtility.C_WELCOME += OnWelcomeClient;
         NetUtility.C_START_GAME += OnStartGameClient;
         NetUtility.C_MAKE_MOVE += OnMakeMoveClient;
+        NetUtility.C_REMATCH += OnRematchClient;
 
         GameUI.Instance.SetlocalGame += OnSetLocalGame;
     }
@@ -632,11 +648,12 @@ public class Chessboard : MonoBehaviour
     {
         NetUtility.S_WELCOME -= OnWelcomeServer;
         NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
+        NetUtility.S_REMATCH -= OnRematchServer;
 
         NetUtility.C_WELCOME -= OnWelcomeClient;
         NetUtility.C_START_GAME -= OnStartGameClient;
         NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
-
+        NetUtility.C_REMATCH -= OnRematchClient;
 
         GameUI.Instance.SetlocalGame -= OnSetLocalGame;
     }
@@ -659,6 +676,14 @@ public class Chessboard : MonoBehaviour
         Server.Instance.Broadcast(mm);
 
     }
+    private void OnRematchServer(NetMessage msg, NetworkConnection cnn)
+    {
+
+        Server.Instance.Broadcast(msg);
+
+    }
+
+
 
     //client
     private void OnWelcomeClient(NetMessage msg)
@@ -692,11 +717,37 @@ public class Chessboard : MonoBehaviour
             MoveTo(mm.originalX, mm.originalY, mm.destinationX, mm.destinationY);
         }
     }
+    private void OnRematchClient(NetMessage msg)
+    {
+        NetRematch rm = msg as NetRematch;
+
+        playerRematch[rm.teamId] = rm.wantRematch == 1;
+
+        if (rm.teamId != currentTeam)
+        {
+
+            rematchIndicator.transform.GetChild((rm.wantRematch == 1) ? 0 : 1).gameObject.SetActive(true);
+            if(rm.wantRematch != 1)
+            {
+                rematchButton.interactable = false;
+            }
+        }
+
+        if (playerRematch[0] && playerRematch[1])
+            GameReset();
+    }
 
 
     //
+    private void ShutdownRelay()
+    {
+        Client.Instance.Shutdown();
+        Server.Instance.Shutdown();
+    }
     private void OnSetLocalGame(bool v)
     {
+        playerCount = -1;
+        currentTeam = -1;
         localGame = v;
     }
     #endregion
